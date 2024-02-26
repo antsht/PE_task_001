@@ -2,20 +2,27 @@
 #include <stdlib.h>
 #include <string.h>
 
-void check_4_len(char *curr, char *roman_number, int *arabic_number, int *flag_1s, int *flag_10s,
-                 int *flag_100s);
-void check_3_len(char *curr, char *roman_number, int *arabic_number, int *flag_1s, int *flag_10s,
-                 int *flag_100s, int *flag_1000s);
-void check_2_len(char *curr, char *roman_number, int *arabic_number, int *flag_1s, int *flag_10s,
-                 int *flag_100s, int *flag_1000s);
-void check_1_len(char *curr, char *roman_number, int *arabic_number, int *flag_1s, int *flag_10s,
-                 int *flag_100s, int *flag_1000s);
+typedef struct {
+    int f1;
+    int f10;
+    int f100;
+    int f1000;
+} flags;
+typedef struct {
+    int value;
+    int token_length;
+    char token[5];
+    int multiplier;
+} roman_token;
 
+void init_tokens(roman_token *tokens);
 void arabic_to_roman(int arabic_number, char *roman_number);
-int roman_to_arabic(char *roman_number);
+int roman_to_arabic(char *roman_number, roman_token *tokens);
 void puckxit();
 
 int main(void) {
+    roman_token tokens[30];
+    init_tokens(tokens);
     char roman_number[16] = {0};
     int i = 0;
     char c;
@@ -27,7 +34,7 @@ int main(void) {
         roman_number[i++] = c;
     }
 
-    printf("%d", roman_to_arabic(roman_number));
+    printf("%d", roman_to_arabic(roman_number, tokens));
     return 0;
 }
 
@@ -36,20 +43,29 @@ void puckxit() {
     exit(EXIT_FAILURE);
 }
 
-int roman_to_arabic(char *roman_number) {
+int roman_to_arabic(char *roman_number, roman_token *tokens) {
     char src[16] = {0};
     strcpy(src, roman_number);
     char *curr = NULL;
     int arabic_number = 0;
-    int flag_1s = 0;
-    int flag_10s = 0;
-    int flag_100s = 0;
-    int flag_1000s = 0;
+    flags flags = {0, 0, 0, 0};
+    for (int i = 0; i < 30; ++i) {
+        curr = strstr(roman_number, tokens[i].token);
 
-    check_4_len(curr, roman_number, &arabic_number, &flag_1s, &flag_10s, &flag_100s);
-    check_3_len(curr, roman_number, &arabic_number, &flag_1s, &flag_10s, &flag_100s, &flag_1000s);
-    check_2_len(curr, roman_number, &arabic_number, &flag_1s, &flag_10s, &flag_100s, &flag_1000s);
-    check_1_len(curr, roman_number, &arabic_number, &flag_1s, &flag_10s, &flag_100s, &flag_1000s);
+        if (curr != NULL) {
+            if (tokens[i].multiplier == 1 && flags.f1 == 1) puckxit();
+            if (tokens[i].multiplier == 10 && flags.f10 == 1) puckxit();
+            if (tokens[i].multiplier == 100 && flags.f100 == 1) puckxit();
+            if (tokens[i].multiplier == 1000 && flags.f1000 == 1) puckxit();
+
+            if (tokens[i].multiplier == 1) flags.f1 = 1;
+            if (tokens[i].multiplier == 10) flags.f1 = 10;
+            if (tokens[i].multiplier == 100) flags.f1 = 100;
+            if (tokens[i].multiplier == 1000) flags.f1 = 1000;
+            arabic_number += tokens[i].value;
+            for (int c = 0; c < tokens[i].token_length; ++c) *(curr + c) = '-';
+        }
+    }
 
     char check[16] = {0};
     arabic_to_roman(arabic_number, check);
@@ -94,272 +110,65 @@ void arabic_to_roman(int arabic_number, char *roman_number) {
     if (num_1s == 9) strcat(roman_number, "IX");
 }
 
-void check_4_len(char *curr, char *roman_number, int *arabic_number, int *flag_1s, int *flag_10s,
-                 int *flag_100s) {
-    curr = strstr(roman_number, "VIII");
-    if (curr != NULL) {
-        if (*flag_1s == 1) puckxit();
-        *flag_1s = 1;
-        *arabic_number += 8;
-        *curr = '-';
-        *(curr + 1) = '-';
-        *(curr + 2) = '-';
-        *(curr + 3) = '-';
-    }
-    curr = strstr(roman_number, "LXXX");
-    if (curr != NULL) {
-        if (*flag_10s == 1) puckxit();
-        *flag_10s = 1;
-        *arabic_number += 80;
-        *curr = '-';
-        *(curr + 1) = '-';
-        *(curr + 2) = '-';
-        *(curr + 3) = '-';
-    }
-    curr = strstr(roman_number, "DCCC");
-    if (curr != NULL) {
-        if (*flag_100s == 1) puckxit();
-        *flag_100s = 1;
-        *arabic_number += 800;
-        *curr = '-';
-        *(curr + 1) = '-';
-        *(curr + 2) = '-';
-        *(curr + 3) = '-';
-    }
+void init_tokens(roman_token *tokens) {
+    roman_token t0 = {8, 4, "VIII", 1};
+    tokens[0] = t0;
+    roman_token t1 = {80, 4, "LXXX", 10};
+    tokens[1] = t1;
+    roman_token t2 = {800, 4, "DCCC", 100};
+    tokens[2] = t2;
+    roman_token t3 = {3, 3, "III", 1};
+    tokens[3] = t3;
+    roman_token t4 = {30, 3, "XXX", 10};
+    tokens[4] = t4;
+    roman_token t5 = {300, 3, "CCC", 100};
+    tokens[5] = t5;
+    roman_token t6 = {3000, 3, "MMM", 1000};
+    tokens[6] = t6;
+    roman_token t7 = {7, 3, "VII", 1};
+    tokens[7] = t7;
+    roman_token t8 = {70, 3, "LXX", 10};
+    tokens[8] = t8;
+    roman_token t9 = {700, 3, "DCC", 100};
+    tokens[9] = t9;
+    roman_token t10 = {2, 2, "II", 1};
+    tokens[10] = t10;
+    roman_token t11 = {20, 2, "XX", 10};
+    tokens[11] = t11;
+    roman_token t12 = {200, 2, "CC", 100};
+    tokens[12] = t12;
+    roman_token t13 = {2000, 2, "MM", 1000};
+    tokens[13] = t13;
+    roman_token t14 = {4, 2, "IV", 1};
+    tokens[14] = t14;
+    roman_token t15 = {40, 2, "XL", 10};
+    tokens[15] = t15;
+    roman_token t16 = {400, 2, "CD", 100};
+    tokens[16] = t16;
+    roman_token t17 = {6, 2, "VI", 1};
+    tokens[17] = t17;
+    roman_token t18 = {60, 2, "LX", 10};
+    tokens[18] = t18;
+    roman_token t19 = {600, 2, "DC", 100};
+    tokens[19] = t19;
+    roman_token t20 = {9, 2, "IX", 1};
+    tokens[20] = t20;
+    roman_token t21 = {90, 2, "XC", 10};
+    tokens[21] = t21;
+    roman_token t22 = {900, 2, "CM", 1000};
+    tokens[22] = t22;
+    roman_token t23 = {1, 1, "I", 1};
+    tokens[23] = t23;
+    roman_token t24 = {5, 1, "V", 1};
+    tokens[24] = t24;
+    roman_token t25 = {10, 1, "X", 10};
+    tokens[25] = t25;
+    roman_token t26 = {50, 1, "L", 10};
+    tokens[26] = t26;
+    roman_token t27 = {100, 1, "C", 100};
+    tokens[27] = t27;
+    roman_token t28 = {500, 1, "D", 100};
+    tokens[28] = t28;
+    roman_token t29 = {1000, 1, "M", 1000};
+    tokens[29] = t29;
 }
-
-void check_3_len(char *curr, char *roman_number, int *arabic_number, int *flag_1s, int *flag_10s,
-                 int *flag_100s, int *flag_1000s) {
-    curr = strstr(roman_number, "III");
-    if (curr != NULL) {
-        if (*flag_1s == 1) puckxit();
-        *flag_1s = 1;
-        *arabic_number += 3;
-        *curr = '-';
-        *(curr + 1) = '-';
-        *(curr + 2) = '-';
-    }
-    curr = strstr(roman_number, "XXX");
-    if (curr != NULL) {
-        if (*flag_10s == 1) puckxit();
-        *flag_10s = 1;
-        *arabic_number += 30;
-        *curr = '-';
-        *(curr + 1) = '-';
-        *(curr + 2) = '-';
-    }
-    curr = strstr(roman_number, "CCC");
-    if (curr != NULL) {
-        if (*flag_100s == 1) puckxit();
-        *flag_100s = 1;
-        *arabic_number += 300;
-        *curr = '-';
-        *(curr + 1) = '-';
-        *(curr + 2) = '-';
-    }
-    curr = strstr(roman_number, "MMM");
-    if (curr != NULL) {
-        if (*flag_1000s == 1) puckxit();
-        *flag_1000s = 1;
-        *arabic_number += 3000;
-        *curr = '-';
-        *(curr + 1) = '-';
-        *(curr + 2) = '-';
-    }
-    curr = strstr(roman_number, "VII");
-    if (curr != NULL) {
-        if (*flag_1s == 1) puckxit();
-        *flag_1s = 1;
-        *arabic_number += 7;
-        *curr = '-';
-        *(curr + 1) = '-';
-        *(curr + 2) = '-';
-    }
-    curr = strstr(roman_number, "LXX");
-    if (curr != NULL) {
-        if (*flag_10s == 1) puckxit();
-        *flag_10s = 1;
-        *arabic_number += 70;
-        *curr = '-';
-        *(curr + 1) = '-';
-        *(curr + 2) = '-';
-    }
-    curr = strstr(roman_number, "DCC");
-    if (curr != NULL) {
-        if (*flag_100s == 1) puckxit();
-        *flag_100s = 1;
-        *arabic_number += 700;
-        *curr = '-';
-        *(curr + 1) = '-';
-        *(curr + 2) = '-';
-    }
-}
-
-void check_2_len(char *curr, char *roman_number, int *arabic_number, int *flag_1s, int *flag_10s,
-                 int *flag_100s, int *flag_1000s) {
-    curr = strstr(roman_number, "II");
-    if (curr != NULL) {
-        if (*flag_1s == 1) puckxit();
-        *flag_1s = 1;
-        *arabic_number += 2;
-        *curr = '-';
-        *(curr + 1) = '-';
-    }
-    curr = strstr(roman_number, "XX");
-    if (curr != NULL) {
-        if (*flag_10s == 1) puckxit();
-        *flag_10s = 1;
-        *arabic_number += 20;
-        *curr = '-';
-        *(curr + 1) = '-';
-    }
-    curr = strstr(roman_number, "CC");
-    if (curr != NULL) {
-        if (*flag_100s == 1) puckxit();
-        *flag_100s = 1;
-        *arabic_number += 200;
-        *curr = '-';
-        *(curr + 1) = '-';
-    }
-    curr = strstr(roman_number, "MM");
-    if (curr != NULL) {
-        if (*flag_1000s == 1) puckxit();
-        *flag_1000s = 1;
-        *arabic_number += 2000;
-        *curr = '-';
-        *(curr + 1) = '-';
-        *(curr + 2) = '-';
-    }
-
-    curr = strstr(roman_number, "IV");
-    if (curr != NULL) {
-        if (*flag_1s == 1) puckxit();
-        *flag_1s = 1;
-        *arabic_number += 4;
-        *curr = '-';
-        *(curr + 1) = '-';
-    }
-    curr = strstr(roman_number, "XL");
-    if (curr != NULL) {
-        if (*flag_10s == 1) puckxit();
-        *flag_10s = 1;
-        *arabic_number += 40;
-        *curr = '-';
-        *(curr + 1) = '-';
-    }
-    curr = strstr(roman_number, "CD");
-    if (curr != NULL) {
-        if (*flag_100s == 1) puckxit();
-        *flag_100s = 1;
-        *arabic_number += 400;
-        *curr = '-';
-        *(curr + 1) = '-';
-    }
-
-    curr = strstr(roman_number, "VI");
-    if (curr != NULL) {
-        if (*flag_1s == 1) puckxit();
-        *flag_1s = 1;
-        *arabic_number += 6;
-        *curr = '-';
-        *(curr + 1) = '-';
-    }
-    curr = strstr(roman_number, "LX");
-    if (curr != NULL) {
-        if (*flag_10s == 1) puckxit();
-        *flag_10s = 1;
-        *arabic_number += 60;
-        *curr = '-';
-        *(curr + 1) = '-';
-    }
-    curr = strstr(roman_number, "DC");
-    if (curr != NULL) {
-        if (*flag_100s == 1) puckxit();
-        *flag_100s = 1;
-        *arabic_number += 600;
-        *curr = '-';
-        *(curr + 1) = '-';
-    }
-
-    curr = strstr(roman_number, "IX");
-    if (curr != NULL) {
-        if (*flag_1s == 1) puckxit();
-        *flag_1s = 1;
-        *arabic_number += 9;
-        *curr = '-';
-        *(curr + 1) = '-';
-    }
-    curr = strstr(roman_number, "XC");
-    if (curr != NULL) {
-        if (*flag_10s == 1) puckxit();
-        *flag_10s = 1;
-        *arabic_number += 90;
-        *curr = '-';
-        *(curr + 1) = '-';
-    }
-    curr = strstr(roman_number, "CM");
-    if (curr != NULL) {
-        if (*flag_100s == 1) puckxit();
-        *flag_100s = 1;
-        *arabic_number += 900;
-        *curr = '-';
-        *(curr + 1) = '-';
-    }
-}
-
-void check_1_len(char *curr, char *roman_number, int *arabic_number, int *flag_1s, int *flag_10s,
-                 int *flag_100s, int *flag_1000s) {
-    curr = strstr(roman_number, "I");
-    if (curr != NULL) {
-        if (*flag_1s == 1) puckxit();
-        *flag_1s = 1;
-        *arabic_number += 1;
-        *curr = '-';
-    }
-    curr = strstr(roman_number, "V");
-    if (curr != NULL) {
-        if (*flag_1s == 1) puckxit();
-        *flag_1s = 1;
-        *arabic_number += 5;
-        *curr = '-';
-    }
-    curr = strstr(roman_number, "X");
-    if (curr != NULL) {
-        if (*flag_10s == 1) puckxit();
-        *flag_10s = 1;
-        *arabic_number += 10;
-        *curr = '-';
-    }
-
-    curr = strstr(roman_number, "L");
-    if (curr != NULL) {
-        if (*flag_10s == 1) puckxit();
-        *flag_10s = 1;
-        *arabic_number += 50;
-        *curr = '-';
-    }
-
-    curr = strstr(roman_number, "C");
-    if (curr != NULL) {
-        if (*flag_100s == 1) puckxit();
-        *flag_100s = 1;
-        *arabic_number += 100;
-        *curr = '-';
-    }
-
-    curr = strstr(roman_number, "D");
-    if (curr != NULL) {
-        if (*flag_100s == 1) puckxit();
-        *flag_100s = 1;
-        *arabic_number += 500;
-        *curr = '-';
-    }
-
-    curr = strstr(roman_number, "M");
-    if (curr != NULL) {
-        if (*flag_1000s == 1) puckxit();
-        *flag_1000s = 1;
-        *arabic_number += 1000;
-        *curr = '-';
-    }
-};
