@@ -57,8 +57,8 @@ void check_roman_input(char *roman_number) {
     for (int i = 0; i < (int)strlen(roman_number); ++i) {
         char c = roman_number[i];
         if ((c != 'I' && c != 'V' && c != 'X' && c != 'L' && c != 'C' && c != 'D' && c != 'M')) {
-            printf("Puck you, Verter!");
-            exit(EXIT_SUCCESS);
+            fprintf(stderr, "Puck you, Verter!");
+            exit(EXIT_FAILURE);
         }
     }
 }
