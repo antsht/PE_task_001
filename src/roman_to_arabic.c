@@ -19,38 +19,42 @@ void init_tokens(roman_token *tokens);
 void arabic_to_roman(int arabic_number, char *roman_number);
 int roman_to_arabic(char *roman_number, roman_token *tokens);
 void puckxit();
+void check_roman_input(char *roman_number);
 
 int main(void) {
     roman_token tokens[30];
     init_tokens(tokens);
     char roman_number[502] = {0};
     fgets(roman_number, 500, stdin);
-
-    if (roman_number[strlen(roman_number) - 1] == '\n') roman_number[strlen(roman_number) - 1] = '\0';
-
-    if (strlen(roman_number) > 15) puckxit();
-
-    for (int i = 0; i < (int)strlen(roman_number); ++i) {
-        char c = roman_number[i];
-        if ((c != 'I' && c != 'V' && c != 'X' && c != 'L' && c != 'C' && c != 'D' && c != 'M')) {
-            printf("Puck you, Verter!");
-            exit(EXIT_FAILURE);
-        }
-    }
-
+    check_roman_input(roman_number);
     printf("%d", roman_to_arabic(roman_number, tokens));
     return 0;
 }
 
+void check_roman_input(char *roman_number) {
+    if (roman_number[strlen(roman_number) - 1] == '\n') roman_number[strlen(roman_number) - 1] = '\0';
+
+    if (strlen(roman_number) > 15) puckxit();
+    if (strcmp(roman_number, "nihil") == 0 || strcmp(roman_number, "nulla") == 0 ||
+        strcmp(roman_number, "N") == 0) {
+        printf("%d", 0);
+        exit(EXIT_SUCCESS);
+    }
+    for (int i = 0; i < (int)strlen(roman_number); ++i) {
+        char c = roman_number[i];
+        if ((c != 'I' && c != 'V' && c != 'X' && c != 'L' && c != 'C' && c != 'D' && c != 'M')) {
+            printf("Puck you, Verter!");
+            exit(EXIT_SUCCESS);
+        }
+    }
+}
+
 void puckxit() {
     printf("Puck you, Verter!");
-    exit(EXIT_FAILURE);
+    exit(EXIT_SUCCESS);
 }
 
 int roman_to_arabic(char *roman_number, roman_token *tokens) {
-    if (strcmp(roman_number, "nihil") == 0 || strcmp(roman_number, "nulla") == 0 ||
-        strcmp(roman_number, "N") == 0)
-        return 0;
     char src[16] = {0};
     strcpy(src, roman_number);
     char *curr = NULL;
@@ -64,7 +68,6 @@ int roman_to_arabic(char *roman_number, roman_token *tokens) {
             if (tokens[i].multiplier == 10 && flags.f10 == 1) puckxit();
             if (tokens[i].multiplier == 100 && flags.f100 == 1) puckxit();
             if (tokens[i].multiplier == 1000 && flags.f1000 == 1) puckxit();
-
             if (tokens[i].multiplier == 1) flags.f1 = 1;
             if (tokens[i].multiplier == 10) flags.f1 = 10;
             if (tokens[i].multiplier == 100) flags.f1 = 100;
