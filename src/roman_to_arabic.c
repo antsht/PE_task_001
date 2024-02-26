@@ -23,15 +23,19 @@ void puckxit();
 int main(void) {
     roman_token tokens[30];
     init_tokens(tokens);
-    char roman_number[16] = {0};
-    int i = 0;
-    char c;
-    while ((c = getchar()) != 10) {
-        if ((c != 'I' && c != 'V' && c != 'X' && c != 'L' && c != 'C' && c != 'D' && c != 'M') || i == 15) {
+    char roman_number[502] = {0};
+    fgets(roman_number, 500, stdin);
+
+    if (roman_number[strlen(roman_number) - 1] == '\n') roman_number[strlen(roman_number) - 1] = '\0';
+
+    if (strlen(roman_number) > 15) puckxit();
+
+    for (int i = 0; i < (int)strlen(roman_number); ++i) {
+        char c = roman_number[i];
+        if ((c != 'I' && c != 'V' && c != 'X' && c != 'L' && c != 'C' && c != 'D' && c != 'M')) {
             printf("Puck you, Verter!");
             exit(EXIT_FAILURE);
         }
-        roman_number[i++] = c;
     }
 
     printf("%d", roman_to_arabic(roman_number, tokens));
