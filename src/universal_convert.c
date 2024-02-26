@@ -63,8 +63,8 @@ void check_roman_input(char *roman_number) {
     }
 }
 void puckxit() {
-    printf("Puck you, Verter!");
-    exit(EXIT_SUCCESS);
+    fprintf(stderr, "Puck you, Verter!");
+    exit(EXIT_FAILURE);
 }
 
 int roman_to_arabic(char *roman_number, roman_token *tokens) {
