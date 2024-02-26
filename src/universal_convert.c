@@ -63,6 +63,10 @@ void puckxit() {
 }
 
 int roman_to_arabic(char *roman_number, roman_token *tokens) {
+    if (strcmp(roman_number, "nihil") == 0 || strcmp(roman_number, "nulla") == 0 ||
+        strcmp(roman_number, "N") == 0)
+        return 0;
+
     char src[16] = {0};
     strcpy(src, roman_number);
     char *curr = NULL;
