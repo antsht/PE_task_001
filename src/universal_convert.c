@@ -26,7 +26,7 @@ int main(void) {
     init_tokens(tokens);
 
     int mode = -1;
-    if (scanf("%d", &mode) != 1 && !(mode == 1 || mode == 2)) puckxit();
+    if (scanf("%d", &mode) != 1 || !(mode == 1 || mode == 2)) puckxit();
     getchar();
 
     if (mode == 1) {
@@ -37,7 +37,7 @@ int main(void) {
     }
     if (mode == 2) {
         int arabic_number = 0;
-        if (scanf("%d", &arabic_number) != 1 && !(arabic_number >= 1 && arabic_number <= 3999)) puckxit();
+        if (scanf("%d", &arabic_number) != 1 || !(arabic_number >= 1 && arabic_number <= 3999)) puckxit();
 
         char roman_number[16] = {0};
         arabic_to_roman(arabic_number, roman_number);
