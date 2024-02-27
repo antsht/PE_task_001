@@ -20,6 +20,7 @@ void arabic_to_roman(int arabic_number, char *roman_number);
 int roman_to_arabic(char *roman_number, roman_token *tokens);
 void puckxit();
 void check_roman_input(char *roman_number);
+roman_token new_token(int value, int token_length, char *token, int multiplier);
 
 int main(void) {
     roman_token tokens[30];
@@ -48,7 +49,7 @@ void check_roman_input(char *roman_number) {
         }
     }
 }
- 
+
 void puckxit() {
     fprintf(stderr, "Puck you, Verter!");
     exit(EXIT_FAILURE);
@@ -120,65 +121,44 @@ void arabic_to_roman(int arabic_number, char *roman_number) {
     if (num_1s == 9) strcat(roman_number, "IX");
 }
 
+roman_token new_token(int value, int token_length, char *token, int multiplier) {
+    roman_token r_token;
+    r_token.value = value;
+    r_token.token_length = token_length;
+    strcpy(r_token.token, token);
+    r_token.multiplier = multiplier;
+    return r_token;
+}
+
 void init_tokens(roman_token *tokens) {
-    roman_token t0 = {8, 4, "VIII", 1};
-    tokens[0] = t0;
-    roman_token t1 = {80, 4, "LXXX", 10};
-    tokens[1] = t1;
-    roman_token t2 = {800, 4, "DCCC", 100};
-    tokens[2] = t2;
-    roman_token t3 = {3, 3, "III", 1};
-    tokens[3] = t3;
-    roman_token t4 = {30, 3, "XXX", 10};
-    tokens[4] = t4;
-    roman_token t5 = {300, 3, "CCC", 100};
-    tokens[5] = t5;
-    roman_token t6 = {3000, 3, "MMM", 1000};
-    tokens[6] = t6;
-    roman_token t7 = {7, 3, "VII", 1};
-    tokens[7] = t7;
-    roman_token t8 = {70, 3, "LXX", 10};
-    tokens[8] = t8;
-    roman_token t9 = {700, 3, "DCC", 100};
-    tokens[9] = t9;
-    roman_token t10 = {2, 2, "II", 1};
-    tokens[10] = t10;
-    roman_token t11 = {20, 2, "XX", 10};
-    tokens[11] = t11;
-    roman_token t12 = {200, 2, "CC", 100};
-    tokens[12] = t12;
-    roman_token t13 = {2000, 2, "MM", 1000};
-    tokens[13] = t13;
-    roman_token t14 = {4, 2, "IV", 1};
-    tokens[14] = t14;
-    roman_token t15 = {40, 2, "XL", 10};
-    tokens[15] = t15;
-    roman_token t16 = {400, 2, "CD", 100};
-    tokens[16] = t16;
-    roman_token t17 = {6, 2, "VI", 1};
-    tokens[17] = t17;
-    roman_token t18 = {60, 2, "LX", 10};
-    tokens[18] = t18;
-    roman_token t19 = {600, 2, "DC", 100};
-    tokens[19] = t19;
-    roman_token t20 = {9, 2, "IX", 1};
-    tokens[20] = t20;
-    roman_token t21 = {90, 2, "XC", 10};
-    tokens[21] = t21;
-    roman_token t22 = {900, 2, "CM", 1000};
-    tokens[22] = t22;
-    roman_token t23 = {1, 1, "I", 1};
-    tokens[23] = t23;
-    roman_token t24 = {5, 1, "V", 1};
-    tokens[24] = t24;
-    roman_token t25 = {10, 1, "X", 10};
-    tokens[25] = t25;
-    roman_token t26 = {50, 1, "L", 10};
-    tokens[26] = t26;
-    roman_token t27 = {100, 1, "C", 100};
-    tokens[27] = t27;
-    roman_token t28 = {500, 1, "D", 100};
-    tokens[28] = t28;
-    roman_token t29 = {1000, 1, "M", 1000};
-    tokens[29] = t29;
+    tokens[0] = new_token(8, 4, "VIII", 1);
+    tokens[1] = new_token(80, 4, "LXXX", 10);
+    tokens[2] = new_token(800, 4, "DCCC", 100);
+    tokens[3] = new_token(3, 3, "III", 1);
+    tokens[4] = new_token(30, 3, "XXX", 10);
+    tokens[5] = new_token(300, 3, "CCC", 100);
+    tokens[6] = new_token(3000, 3, "MMM", 1000);
+    tokens[7] = new_token(7, 3, "VII", 1);
+    tokens[8] = new_token(70, 3, "LXX", 10);
+    tokens[9] = new_token(700, 3, "DCC", 100);
+    tokens[10] = new_token(2, 2, "II", 1);
+    tokens[11] = new_token(20, 2, "XX", 10);
+    tokens[12] = new_token(200, 2, "CC", 100);
+    tokens[13] = new_token(2000, 2, "MM", 1000);
+    tokens[14] = new_token(4, 2, "IV", 1);
+    tokens[15] = new_token(40, 2, "XL", 10);
+    tokens[16] = new_token(400, 2, "CD", 100);
+    tokens[17] = new_token(6, 2, "VI", 1);
+    tokens[18] = new_token(60, 2, "LX", 10);
+    tokens[19] = new_token(600, 2, "DC", 100);
+    tokens[20] = new_token(9, 2, "IX", 1);
+    tokens[21] = new_token(90, 2, "XC", 10);
+    tokens[22] = new_token(900, 2, "CM", 1000);
+    tokens[23] = new_token(1, 1, "I", 1);
+    tokens[24] = new_token(5, 1, "V", 1);
+    tokens[25] = new_token(10, 1, "X", 10);
+    tokens[26] = new_token(50, 1, "L", 10);
+    tokens[27] = new_token(100, 1, "C", 100);
+    tokens[28] = new_token(500, 1, "D", 100);
+    tokens[29] = new_token(1000, 1, "M", 1000);
 }
