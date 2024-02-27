@@ -48,7 +48,7 @@ void check_roman_input(char *roman_number) {
         }
     }
 }
-
+ 
 void puckxit() {
     fprintf(stderr, "Puck you, Verter!");
     exit(EXIT_FAILURE);
